@@ -1,0 +1,64 @@
+version: '3'
+services:
+  namenode:
+    image: tailtarget/hadoop:2.7.2
+    command: /usr/local/bin/start-namenode.sh
+    ports: 
+        - "50070:50070"
+        - "9000:9000"     
+    hostname: namenode
+    volumes:
+        - ../data/work-data/hadoop:/data
+  datanode:
+    image: tailtarget/hadoop:2.7.2
+    command: hdfs datanode
+    ports:
+        - "50075" # local port dynamically assigned. allows node to be scaled up and down
+        - "50010:50010"
+    links:
+        - namenode
+    hostname: datanode
+    volumes:
+          - ../data/work-data/hadoop:/data
+          - ../data/test-data:/test-data
+  spark-master:
+    image: tailtarget/spark:2.1.0
+    command: /usr/local/spark-2.1.0-bin-hadoop2.7/sbin/start-master.sh
+    ports:
+      - "8080:8080"
+      - "4040:4040"
+    links:
+      - namenode
+    hostname: spark-master
+    volumes:
+        - ../data/jar:/jar
+        - ../data/app-conf:/app-conf
+  spark-slave:
+    image: tailtarget/spark:2.1.0
+    command: /usr/local/spark-2.1.0-bin-hadoop2.7/sbin/start-slave.sh spark://spark-master:7077
+    ports:
+      - "8081" # local port dynamically assigned. allows node to be scaled up and down
+      - "8082" # local port dynamically assigned. allows node to be scaled up and down
+    links:
+      - namenode
+      - spark-master
+    hostname: spark-slave
+    volumes:
+        - ../data/jar:/jar
+  spark-notebook:
+    image: andypetrella/spark-notebook:0.9.0-SNAPSHOT-scala-2.11.8-spark-2.1.0-hadoop-2.7.2
+    ports:
+      - "9001:9000"
+    links:
+      - spark-master
+      - spark-slave
+    hostname: spark-notebook
+    volumes:
+        - ../data/jar:/jar
+        - ../data/work-data/notebooks:/opt/docker/notebooks/spark-sql-demo
+        - ../data/notebook-repository:/root/.m2/repository
+    env_file:
+        - ~/.notebooks/variables.env
+
+
+
