@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.tailtarget</groupId>
+  <artifactId>sparksqlgeohash</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20180615230612</lastUpdated>
+  </versioning>
+</metadata>

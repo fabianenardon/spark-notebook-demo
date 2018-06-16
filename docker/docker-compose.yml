@@ -33,6 +33,7 @@ services:
     volumes:
         - ../data/jar:/jar
         - ../data/app-conf:/app-conf
+        - ../data/work-data/notebooks:/opt/docker/notebooks/spark-sql-demo
   spark-slave:
     image: tailtarget/spark:2.1.0
     command: /usr/local/spark-2.1.0-bin-hadoop2.7/sbin/start-slave.sh spark://spark-master:7077
